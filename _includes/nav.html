@@ -1,34 +1,40 @@
-<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand page-scroll" href="#page-top">Start Bootstrap</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a class="page-scroll" href="#about">About</a>
-                </li>
-                <li>
-                    <a class="page-scroll" href="#services">Services</a>
-                </li>
-                <li>
-                    <a class="page-scroll" href="#portfolio">Portfolio</a>
-                </li>
-                <li>
-                    <a class="page-scroll" href="#contact">Contact</a>
-                </li>
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container-fluid -->
+<nav role="navigation" aria-label="Main navigation">
+  <ul class="navigation-list">
+    {%- assign pages_list = site.html_pages | sort:"nav_order" -%}
+    {%- for node in pages_list -%}
+      {%- unless node.nav_exclude -%}
+        {%- if node.parent == nil -%}
+          <li class="navigation-list-item{% if page.url == node.url or page.parent == node.title or page.grand_parent == node.title %} active{% endif %}">
+            {%- if page.parent == node.title or page.grand_parent == node.title -%}
+              {%- assign first_level_url = node.url | absolute_url -%}
+            {%- endif -%}
+            <a href="{{ node.url | absolute_url }}" class="navigation-list-link{% if page.url == node.url %} active{% endif %}">{{ node.title }}</a>
+            {%- if node.has_children -%}
+              {%- assign children_list = site.html_pages | where: "parent", node.title | sort:"nav_order" -%}
+              <ul class="navigation-list-child-list ">
+                {%- for child in children_list -%}
+                  <li class="navigation-list-item {% if page.url == child.url or page.parent == child.title %} active{% endif %}">
+                    {%- if page.url == child.url or page.parent == child.title -%}
+                      {%- assign second_level_url = child.url | absolute_url -%}
+                    {%- endif -%}
+                    <a href="{{ child.url | absolute_url }}" class="navigation-list-link{% if page.url == child.url %} active{% endif %}">{{ child.title }}</a>
+                    {%- if child.has_children -%}
+                        {%- assign grand_children_list = site.html_pages | where: "parent", child.title | sort:"nav_order" -%}
+                        <ul class="navigation-list-child-list">
+                        {%- for grand_child in grand_children_list -%}
+                          <li class="navigation-list-item {% if page.url == grand_child.url %} active{% endif %}">
+                            <a href="{{ grand_child.url | absolute_url }}" class="navigation-list-link{% if page.url == grand_child.url %} active{% endif %}">{{ grand_child.title }}</a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  </ul>
 </nav>
